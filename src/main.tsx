@@ -8,36 +8,41 @@ import {
   createRouter,
 } from '@tanstack/react-router'
 import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
-import TanStackQueryDemo from './routes/demo.tanstack-query.tsx'
 
 import Header from './components/Header'
 
 import * as TanStackQueryProvider from './integrations/tanstack-query/root-provider.tsx'
+import 'src/settings.ts'
 
 import './styles.css'
 import reportWebVitals from './reportWebVitals.ts'
 
-import App from './App.tsx'
+import Home from './pages/Home.tsx'
+import Search from './pages/Search.tsx'
 
 const rootRoute = createRootRoute({
   component: () => (
-    <>
+    <div>
       <Header />
       <Outlet />
       <TanStackRouterDevtools />
-    </>
+    </div>
   ),
 })
 
 const indexRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/',
-  component: App,
+  component: Home,
 })
 
 const routeTree = rootRoute.addChildren([
   indexRoute,
-  TanStackQueryDemo(rootRoute),
+  createRoute({
+    path: '/search',
+    component: Search,
+    getParentRoute: () => rootRoute,
+  })
 ])
 
 const TanStackQueryProviderContext = TanStackQueryProvider.getContext()
