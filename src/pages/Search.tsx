@@ -16,7 +16,6 @@ export default function Search() {
                 translation_id: '2cc25610',
             },
         }),
-        queryKey: ['search', searchText],
         enabled: !!searchText,
     })
 
