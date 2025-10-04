@@ -1,28 +1,71 @@
+import type { CheckedState } from '@radix-ui/react-checkbox'
 import { useQuery } from '@tanstack/react-query'
 import { useState } from 'react'
-import { searchVersesApiSearchGetOptions } from 'src/client/@tanstack/react-query.gen'
+import {
+    getTranslationsApiTranslationsGetOptions,
+    searchVersesApiSearchGetOptions,
+} from 'src/client/@tanstack/react-query.gen'
 import Verse from 'src/components/local/Verse'
 import { Button } from 'src/components/ui/button'
+import { Checkbox } from 'src/components/ui/checkbox'
+import Combobox from 'src/components/ui/combobox'
 import { Input } from 'src/components/ui/input'
+import { Label } from 'src/components/ui/label'
 
 export default function Search() {
     const [searchInputValue, setSearchInputValue] = useState('')
     const [searchText, setSearchText] = useState('')
+    const [exactMatch, setExactMatch] = useState(false)
+    const [translationId, setTranslationId] = useState('2cc25610')
 
     const searchQuery = useQuery({
         ...searchVersesApiSearchGetOptions({
             query: {
                 q: searchText,
-                translation_id: '2cc25610',
+                translation_id: translationId,
+                exact: exactMatch,
             },
         }),
-        enabled: !!searchText,
+        enabled: !!searchText && !!translationId,
     })
+
+    const translationOptionsQuery = useQuery(
+        getTranslationsApiTranslationsGetOptions(),
+    )
+    const translationList = translationOptionsQuery.data || []
+
+    const translationOptions = translationList.map((translation) => ({
+        value: translation.public_id,
+        label: translation.abbreviation,
+    }))
 
     return (
         <div>
             <div className='flex w-full justify-center'>
                 <div className='flex'>
+                    <Combobox
+                        searchEnabled={false}
+                        onChange={setTranslationId}
+                        className='mr-2'
+                        placeholder='Select translation'
+                        options={translationOptions}
+                    />
+                    <div className='flex items-center mr-3'>
+                        <Checkbox
+                            id='exact-match-checkbox'
+                            checked={exactMatch}
+                            onCheckedChange={(checked: CheckedState) => {
+                                setExactMatch(
+                                    checked === 'indeterminate'
+                                        ? false
+                                        : checked,
+                                )
+                            }}
+                        />
+                        <Label className='ml-1' htmlFor='exact-match-checkbox'>
+                            Exact Match
+                        </Label>
+                    </div>
                     <Input
                         value={searchInputValue}
                         onChange={(e) => {
@@ -37,6 +80,7 @@ export default function Search() {
                         }}
                     />
                     <Button
+                        disabled={!searchInputValue || !translationId}
                         onClick={() => {
                             setSearchText(searchInputValue)
                         }}

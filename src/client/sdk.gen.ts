@@ -3,70 +3,70 @@
 import type { Client, Options as Options2, TDataShape } from './client'
 import { client } from './client.gen'
 import type {
-  GetContentApiContentGetData,
-  GetContentApiContentGetErrors,
-  GetContentApiContentGetResponses,
-  GetTranslationMetadataApiTranslationsTranslationIdMetadataGetData,
-  GetTranslationMetadataApiTranslationsTranslationIdMetadataGetErrors,
-  GetTranslationMetadataApiTranslationsTranslationIdMetadataGetResponses,
-  GetTranslationsApiTranslationsGetData,
-  GetTranslationsApiTranslationsGetResponses,
-  HealthHealthGetData,
-  HealthHealthGetResponses,
-  SearchVersesApiSearchGetData,
-  SearchVersesApiSearchGetErrors,
-  SearchVersesApiSearchGetResponses,
+    GetContentApiContentGetData,
+    GetContentApiContentGetErrors,
+    GetContentApiContentGetResponses,
+    GetTranslationMetadataApiTranslationsTranslationIdMetadataGetData,
+    GetTranslationMetadataApiTranslationsTranslationIdMetadataGetErrors,
+    GetTranslationMetadataApiTranslationsTranslationIdMetadataGetResponses,
+    GetTranslationsApiTranslationsGetData,
+    GetTranslationsApiTranslationsGetResponses,
+    HealthHealthGetData,
+    HealthHealthGetResponses,
+    SearchVersesApiSearchGetData,
+    SearchVersesApiSearchGetErrors,
+    SearchVersesApiSearchGetResponses,
 } from './types.gen'
 
 export type Options<
-  TData extends TDataShape = TDataShape,
-  ThrowOnError extends boolean = boolean,
+    TData extends TDataShape = TDataShape,
+    ThrowOnError extends boolean = boolean,
 > = Options2<TData, ThrowOnError> & {
-  /**
-   * You can provide a client instance returned by `createClient()` instead of
-   * individual options. This might be also useful if you want to implement a
-   * custom client.
-   */
-  client?: Client
-  /**
-   * You can pass arbitrary values through the `meta` object. This can be
-   * used to access values that aren't defined as part of the SDK function.
-   */
-  meta?: Record<string, unknown>
+    /**
+     * You can provide a client instance returned by `createClient()` instead of
+     * individual options. This might be also useful if you want to implement a
+     * custom client.
+     */
+    client?: Client
+    /**
+     * You can pass arbitrary values through the `meta` object. This can be
+     * used to access values that aren't defined as part of the SDK function.
+     */
+    meta?: Record<string, unknown>
 }
 
 /**
  * Health
  */
 export const healthHealthGet = <ThrowOnError extends boolean = false>(
-  options?: Options<HealthHealthGetData, ThrowOnError>,
+    options?: Options<HealthHealthGetData, ThrowOnError>,
 ) => {
-  return (options?.client ?? client).get<
-    HealthHealthGetResponses,
-    unknown,
-    ThrowOnError
-  >({
-    url: '/health',
-    ...options,
-  })
+    return (options?.client ?? client).get<
+        HealthHealthGetResponses,
+        unknown,
+        ThrowOnError
+    >({
+        url: '/health',
+        ...options,
+    })
 }
 
 /**
  * Get Translations
  */
 export const getTranslationsApiTranslationsGet = <
-  ThrowOnError extends boolean = false,
+    ThrowOnError extends boolean = false,
 >(
-  options?: Options<GetTranslationsApiTranslationsGetData, ThrowOnError>,
+    options?: Options<GetTranslationsApiTranslationsGetData, ThrowOnError>,
 ) => {
-  return (options?.client ?? client).get<
-    GetTranslationsApiTranslationsGetResponses,
-    unknown,
-    ThrowOnError
-  >({
-    url: '/api/translations',
-    ...options,
-  })
+    return (options?.client ?? client).get<
+        GetTranslationsApiTranslationsGetResponses,
+        unknown,
+        ThrowOnError
+    >({
+        url: '/api/translations',
+        ...options,
+    })
 }
 
 /**
@@ -78,37 +78,37 @@ export const getTranslationsApiTranslationsGet = <
  * - Total statistics
  */
 export const getTranslationMetadataApiTranslationsTranslationIdMetadataGet = <
-  ThrowOnError extends boolean = false,
+    ThrowOnError extends boolean = false,
 >(
-  options: Options<
-    GetTranslationMetadataApiTranslationsTranslationIdMetadataGetData,
-    ThrowOnError
-  >,
+    options: Options<
+        GetTranslationMetadataApiTranslationsTranslationIdMetadataGetData,
+        ThrowOnError
+    >,
 ) => {
-  return (options.client ?? client).get<
-    GetTranslationMetadataApiTranslationsTranslationIdMetadataGetResponses,
-    GetTranslationMetadataApiTranslationsTranslationIdMetadataGetErrors,
-    ThrowOnError
-  >({
-    url: '/api/translations/{translation_id}/metadata',
-    ...options,
-  })
+    return (options.client ?? client).get<
+        GetTranslationMetadataApiTranslationsTranslationIdMetadataGetResponses,
+        GetTranslationMetadataApiTranslationsTranslationIdMetadataGetErrors,
+        ThrowOnError
+    >({
+        url: '/api/translations/{translation_id}/metadata',
+        ...options,
+    })
 }
 
 /**
  * Search Verses
  */
 export const searchVersesApiSearchGet = <ThrowOnError extends boolean = false>(
-  options: Options<SearchVersesApiSearchGetData, ThrowOnError>,
+    options: Options<SearchVersesApiSearchGetData, ThrowOnError>,
 ) => {
-  return (options.client ?? client).get<
-    SearchVersesApiSearchGetResponses,
-    SearchVersesApiSearchGetErrors,
-    ThrowOnError
-  >({
-    url: '/api/search',
-    ...options,
-  })
+    return (options.client ?? client).get<
+        SearchVersesApiSearchGetResponses,
+        SearchVersesApiSearchGetErrors,
+        ThrowOnError
+    >({
+        url: '/api/search',
+        ...options,
+    })
 }
 
 /**
@@ -119,14 +119,14 @@ export const searchVersesApiSearchGet = <ThrowOnError extends boolean = false>(
  * - Range: start_book/chapter/verse to end_book/chapter/verse
  */
 export const getContentApiContentGet = <ThrowOnError extends boolean = false>(
-  options: Options<GetContentApiContentGetData, ThrowOnError>,
+    options: Options<GetContentApiContentGetData, ThrowOnError>,
 ) => {
-  return (options.client ?? client).get<
-    GetContentApiContentGetResponses,
-    GetContentApiContentGetErrors,
-    ThrowOnError
-  >({
-    url: '/api/content',
-    ...options,
-  })
+    return (options.client ?? client).get<
+        GetContentApiContentGetResponses,
+        GetContentApiContentGetErrors,
+        ThrowOnError
+    >({
+        url: '/api/content',
+        ...options,
+    })
 }

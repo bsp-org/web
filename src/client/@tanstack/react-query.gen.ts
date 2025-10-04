@@ -4,117 +4,117 @@ import { queryOptions } from '@tanstack/react-query'
 
 import { client } from '../client.gen'
 import {
-  getContentApiContentGet,
-  getTranslationMetadataApiTranslationsTranslationIdMetadataGet,
-  getTranslationsApiTranslationsGet,
-  healthHealthGet,
-  type Options,
-  searchVersesApiSearchGet,
+    getContentApiContentGet,
+    getTranslationMetadataApiTranslationsTranslationIdMetadataGet,
+    getTranslationsApiTranslationsGet,
+    healthHealthGet,
+    type Options,
+    searchVersesApiSearchGet,
 } from '../sdk.gen'
 import type {
-  GetContentApiContentGetData,
-  GetTranslationMetadataApiTranslationsTranslationIdMetadataGetData,
-  GetTranslationsApiTranslationsGetData,
-  HealthHealthGetData,
-  SearchVersesApiSearchGetData,
+    GetContentApiContentGetData,
+    GetTranslationMetadataApiTranslationsTranslationIdMetadataGetData,
+    GetTranslationsApiTranslationsGetData,
+    HealthHealthGetData,
+    SearchVersesApiSearchGetData,
 } from '../types.gen'
 
 export type QueryKey<TOptions extends Options> = [
-  Pick<TOptions, 'baseUrl' | 'body' | 'headers' | 'path' | 'query'> & {
-    _id: string
-    _infinite?: boolean
-    tags?: ReadonlyArray<string>
-  },
+    Pick<TOptions, 'baseUrl' | 'body' | 'headers' | 'path' | 'query'> & {
+        _id: string
+        _infinite?: boolean
+        tags?: ReadonlyArray<string>
+    },
 ]
 
 const createQueryKey = <TOptions extends Options>(
-  id: string,
-  options?: TOptions,
-  infinite?: boolean,
-  tags?: ReadonlyArray<string>,
+    id: string,
+    options?: TOptions,
+    infinite?: boolean,
+    tags?: ReadonlyArray<string>,
 ): [QueryKey<TOptions>[0]] => {
-  const params: QueryKey<TOptions>[0] = {
-    _id: id,
-    baseUrl:
-      options?.baseUrl || (options?.client ?? client).getConfig().baseUrl,
-  } as QueryKey<TOptions>[0]
-  if (infinite) {
-    params._infinite = infinite
-  }
-  if (tags) {
-    params.tags = tags
-  }
-  if (options?.body) {
-    params.body = options.body
-  }
-  if (options?.headers) {
-    params.headers = options.headers
-  }
-  if (options?.path) {
-    params.path = options.path
-  }
-  if (options?.query) {
-    params.query = options.query
-  }
-  return [params]
+    const params: QueryKey<TOptions>[0] = {
+        _id: id,
+        baseUrl:
+            options?.baseUrl || (options?.client ?? client).getConfig().baseUrl,
+    } as QueryKey<TOptions>[0]
+    if (infinite) {
+        params._infinite = infinite
+    }
+    if (tags) {
+        params.tags = tags
+    }
+    if (options?.body) {
+        params.body = options.body
+    }
+    if (options?.headers) {
+        params.headers = options.headers
+    }
+    if (options?.path) {
+        params.path = options.path
+    }
+    if (options?.query) {
+        params.query = options.query
+    }
+    return [params]
 }
 
 export const healthHealthGetQueryKey = (
-  options?: Options<HealthHealthGetData>,
+    options?: Options<HealthHealthGetData>,
 ) => createQueryKey('healthHealthGet', options)
 
 /**
  * Health
  */
 export const healthHealthGetOptions = (
-  options?: Options<HealthHealthGetData>,
+    options?: Options<HealthHealthGetData>,
 ) => {
-  return queryOptions({
-    queryFn: async ({ queryKey, signal }) => {
-      const { data } = await healthHealthGet({
-        ...options,
-        ...queryKey[0],
-        signal,
-        throwOnError: true,
-      })
-      return data
-    },
-    queryKey: healthHealthGetQueryKey(options),
-  })
+    return queryOptions({
+        queryFn: async ({ queryKey, signal }) => {
+            const { data } = await healthHealthGet({
+                ...options,
+                ...queryKey[0],
+                signal,
+                throwOnError: true,
+            })
+            return data
+        },
+        queryKey: healthHealthGetQueryKey(options),
+    })
 }
 
 export const getTranslationsApiTranslationsGetQueryKey = (
-  options?: Options<GetTranslationsApiTranslationsGetData>,
+    options?: Options<GetTranslationsApiTranslationsGetData>,
 ) => createQueryKey('getTranslationsApiTranslationsGet', options)
 
 /**
  * Get Translations
  */
 export const getTranslationsApiTranslationsGetOptions = (
-  options?: Options<GetTranslationsApiTranslationsGetData>,
+    options?: Options<GetTranslationsApiTranslationsGetData>,
 ) => {
-  return queryOptions({
-    queryFn: async ({ queryKey, signal }) => {
-      const { data } = await getTranslationsApiTranslationsGet({
-        ...options,
-        ...queryKey[0],
-        signal,
-        throwOnError: true,
-      })
-      return data
-    },
-    queryKey: getTranslationsApiTranslationsGetQueryKey(options),
-  })
+    return queryOptions({
+        queryFn: async ({ queryKey, signal }) => {
+            const { data } = await getTranslationsApiTranslationsGet({
+                ...options,
+                ...queryKey[0],
+                signal,
+                throwOnError: true,
+            })
+            return data
+        },
+        queryKey: getTranslationsApiTranslationsGetQueryKey(options),
+    })
 }
 
 export const getTranslationMetadataApiTranslationsTranslationIdMetadataGetQueryKey =
-  (
-    options: Options<GetTranslationMetadataApiTranslationsTranslationIdMetadataGetData>,
-  ) =>
-    createQueryKey(
-      'getTranslationMetadataApiTranslationsTranslationIdMetadataGet',
-      options,
-    )
+    (
+        options: Options<GetTranslationMetadataApiTranslationsTranslationIdMetadataGetData>,
+    ) =>
+        createQueryKey(
+            'getTranslationMetadataApiTranslationsTranslationIdMetadataGet',
+            options,
+        )
 
 /**
  * Get Translation Metadata
@@ -125,53 +125,55 @@ export const getTranslationMetadataApiTranslationsTranslationIdMetadataGetQueryK
  * - Total statistics
  */
 export const getTranslationMetadataApiTranslationsTranslationIdMetadataGetOptions =
-  (
-    options: Options<GetTranslationMetadataApiTranslationsTranslationIdMetadataGetData>,
-  ) => {
-    return queryOptions({
-      queryFn: async ({ queryKey, signal }) => {
-        const { data } =
-          await getTranslationMetadataApiTranslationsTranslationIdMetadataGet({
-            ...options,
-            ...queryKey[0],
-            signal,
-            throwOnError: true,
-          })
-        return data
-      },
-      queryKey:
-        getTranslationMetadataApiTranslationsTranslationIdMetadataGetQueryKey(
-          options,
-        ),
-    })
-  }
+    (
+        options: Options<GetTranslationMetadataApiTranslationsTranslationIdMetadataGetData>,
+    ) => {
+        return queryOptions({
+            queryFn: async ({ queryKey, signal }) => {
+                const { data } =
+                    await getTranslationMetadataApiTranslationsTranslationIdMetadataGet(
+                        {
+                            ...options,
+                            ...queryKey[0],
+                            signal,
+                            throwOnError: true,
+                        },
+                    )
+                return data
+            },
+            queryKey:
+                getTranslationMetadataApiTranslationsTranslationIdMetadataGetQueryKey(
+                    options,
+                ),
+        })
+    }
 
 export const searchVersesApiSearchGetQueryKey = (
-  options: Options<SearchVersesApiSearchGetData>,
+    options: Options<SearchVersesApiSearchGetData>,
 ) => createQueryKey('searchVersesApiSearchGet', options)
 
 /**
  * Search Verses
  */
 export const searchVersesApiSearchGetOptions = (
-  options: Options<SearchVersesApiSearchGetData>,
+    options: Options<SearchVersesApiSearchGetData>,
 ) => {
-  return queryOptions({
-    queryFn: async ({ queryKey, signal }) => {
-      const { data } = await searchVersesApiSearchGet({
-        ...options,
-        ...queryKey[0],
-        signal,
-        throwOnError: true,
-      })
-      return data
-    },
-    queryKey: searchVersesApiSearchGetQueryKey(options),
-  })
+    return queryOptions({
+        queryFn: async ({ queryKey, signal }) => {
+            const { data } = await searchVersesApiSearchGet({
+                ...options,
+                ...queryKey[0],
+                signal,
+                throwOnError: true,
+            })
+            return data
+        },
+        queryKey: searchVersesApiSearchGetQueryKey(options),
+    })
 }
 
 export const getContentApiContentGetQueryKey = (
-  options: Options<GetContentApiContentGetData>,
+    options: Options<GetContentApiContentGetData>,
 ) => createQueryKey('getContentApiContentGet', options)
 
 /**
@@ -182,18 +184,18 @@ export const getContentApiContentGetQueryKey = (
  * - Range: start_book/chapter/verse to end_book/chapter/verse
  */
 export const getContentApiContentGetOptions = (
-  options: Options<GetContentApiContentGetData>,
+    options: Options<GetContentApiContentGetData>,
 ) => {
-  return queryOptions({
-    queryFn: async ({ queryKey, signal }) => {
-      const { data } = await getContentApiContentGet({
-        ...options,
-        ...queryKey[0],
-        signal,
-        throwOnError: true,
-      })
-      return data
-    },
-    queryKey: getContentApiContentGetQueryKey(options),
-  })
+    return queryOptions({
+        queryFn: async ({ queryKey, signal }) => {
+            const { data } = await getContentApiContentGet({
+                ...options,
+                ...queryKey[0],
+                signal,
+                throwOnError: true,
+            })
+            return data
+        },
+        queryKey: getContentApiContentGetQueryKey(options),
+    })
 }
