@@ -4,43 +4,40 @@
 ARG NODE_VERSION=24.7.0-alpine
 ARG NGINX_VERSION=alpine3.22
 
-# Use a lightweight Node.js image for building (customizable via ARG)
 FROM node:${NODE_VERSION} AS builder
 
-# Set the working directory inside the container
+ARG VITE_API_BASE_URL=http://localhost:8000/
+
+# Enable Corepack
+RUN corepack enable
+
 WORKDIR /app
 
-# Copy package-related files first to leverage Docker's caching mechanism
+# Copy Yarn binary and config first (important!)
+COPY .yarn .yarn
+COPY .yarnrc.yml ./
 COPY package.json yarn.lock ./
 
-# Install project dependencies using npm ci (ensures a clean, reproducible install)
-RUN --mount=type=cache,target=/root/.npm yarn install
+# Install dependencies (cached)
+RUN --mount=type=cache,target=/root/.yarn/cache yarn install --immutable
 
-# Copy the rest of the application source code into the container
+# Copy the rest of the application source code
 COPY . .
 
-# Build the React.js application (outputs to /app/dist)
-RUN yarn build
+# Build the React.js application
+RUN VITE_API_BASE_URL=${VITE_API_BASE_URL} yarn build
 
 # =========================================
 # Stage 2: Prepare Nginx to Serve Static Files
 # =========================================
-
 FROM nginxinc/nginx-unprivileged:${NGINX_VERSION} AS runner
 
-# Use a built-in non-root user for security best practices
 USER nginx
 
-# Copy custom Nginx config
 COPY nginx.conf /etc/nginx/nginx.conf
+COPY --chown=nginx:nginx --from=builder /app/dist /usr/share/nginx/html
 
-# Copy the static build output from the build stage to Nginx's default HTML serving directory
-COPY --chown=nginx:nginx  --from=builder /app/dist /usr/share/nginx/html
-
-# Expose port 8080 to allow HTTP traffic
-# Note: The default NGINX container now listens on port 8080 instead of 80 
 EXPOSE 8080
 
-# Start Nginx directly with custom config
 ENTRYPOINT ["nginx", "-c", "/etc/nginx/nginx.conf"]
 CMD ["-g", "daemon off;"]

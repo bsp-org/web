@@ -9,6 +9,11 @@ yarn install
 yarn run start
 ```
 
+# Configure environment
+```bash
+cp .env.example .env
+```
+
 # Building For Production
 
 To build this application for production:
