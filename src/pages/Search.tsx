@@ -1,9 +1,9 @@
 import type { CheckedState } from '@radix-ui/react-checkbox'
 import { useQuery } from '@tanstack/react-query'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
     getTranslationsApiTranslationsGetOptions,
-    searchVersesApiSearchGetOptions,
+    getVersesApiVersesGetOptions,
 } from 'src/client/@tanstack/react-query.gen'
 import Verse from 'src/components/local/Verse'
 import { Button } from 'src/components/ui/button'
@@ -11,23 +11,37 @@ import { Checkbox } from 'src/components/ui/checkbox'
 import Combobox from 'src/components/ui/combobox'
 import { Input } from 'src/components/ui/input'
 import { Label } from 'src/components/ui/label'
+import { parseAsBoolean, useQueryState, parseAsInteger } from 'nuqs'
+import Spinner from 'src/components/local/Spinner'
 
 export default function Search() {
-    const [searchInputValue, setSearchInputValue] = useState('')
-    const [searchText, setSearchText] = useState('')
-    const [exactMatch, setExactMatch] = useState(false)
-    const [translationId, setTranslationId] = useState('2cc25610')
+    const [searchText, setSearchText] = useQueryState('search')
+    const [exactMatch, setExactMatch] = useQueryState(
+        'exact',
+        parseAsBoolean.withDefault(true),
+    )
+    const [translationId, setTranslationId] = useQueryState('translation')
+    const [searchInputValue, setSearchInputValue] = useState(searchText || '')
+    const [currentPage, setCurrentPage] = useQueryState(
+        'page',
+        parseAsInteger.withDefault(1),
+    )
 
     const searchQuery = useQuery({
-        ...searchVersesApiSearchGetOptions({
+        ...getVersesApiVersesGetOptions({
             query: {
                 q: searchText,
-                translation_id: translationId,
+                translation_id: translationId || '',
                 exact: exactMatch,
+                page: currentPage,
             },
         }),
         enabled: !!searchText && !!translationId,
     })
+
+    useEffect(() => {
+        setCurrentPage(1)
+    }, [searchText, translationId, exactMatch])
 
     const translationOptionsQuery = useQuery(
         getTranslationsApiTranslationsGetOptions(),
@@ -39,13 +53,22 @@ export default function Search() {
         label: translation.abbreviation,
     }))
 
+    if (translationOptionsQuery.isLoading) {
+        return <Spinner />
+    }
+
     return (
         <div>
             <div className='flex w-full justify-center'>
                 <div className='flex'>
                     <Combobox
                         searchEnabled={false}
-                        onChange={setTranslationId}
+                        value={translationId || ''}
+                        onChange={(value) => {
+                            if (value) {
+                                setTranslationId(value)
+                            }
+                        }}
                         className='mr-2'
                         placeholder='Select translation'
                         options={translationOptions}
@@ -91,22 +114,66 @@ export default function Search() {
             </div>
             <div className='flex w-full justify-center'>
                 <div className='flex-col w-200 justify-center'>
-                    <div className='flex justify-center text-3xl font-bold mb-3 mt-10'>
+                    <div className='flex justify-center text-3xl font-bold mb-1 mt-10'>
                         Verses
                     </div>
                     <div className='flex justify-center'>
-                        {!searchQuery.data && <span>No DATA</span>}
-                        {searchQuery.data && (
+                        {!searchQuery.data?.verses && (
+                            <div className='flex justify-center text-gray-500'>
+                                No DATA
+                            </div>
+                        )}
+                        {searchQuery.data?.verses && (
                             <div>
-                                {searchQuery.data.verses.map((item) => (
+                                <span className='flex text-gray-500 mb-'>
+                                    {searchQuery.data.pagination.total_items}{' '}
+                                    verses found
+                                </span>
+                                {searchQuery.data?.verses.map((verse) => (
                                     <Verse
-                                        key={`${item.book.book_id}-${item.chapter}-${item.verse}`}
-                                        verse={item}
+                                        key={`${verse.book.id}-${verse.chapter}-${verse.verse}`}
+                                        verse={verse}
                                     />
                                 ))}
                             </div>
                         )}
                     </div>
+                    {searchQuery.data &&
+                        searchQuery.data.pagination.total_pages > 1 && (
+                            <div className='flex justify-center gap-4 mt-10 mb-10'>
+                                <div className='flex'>
+                                    <Button
+                                        disabled={
+                                            searchQuery.data?.pagination
+                                                .previous === null
+                                        }
+                                        onClick={() => {
+                                            setCurrentPage(currentPage - 1)
+                                        }}
+                                    >
+                                        Previous
+                                    </Button>
+                                </div>
+                                <div className='flex'>
+                                    <span className='text-gray-500 content-center'>
+                                        {currentPage}
+                                    </span>
+                                </div>
+                                <div className='flex'>
+                                    <Button
+                                        disabled={
+                                            searchQuery.data?.pagination
+                                                .next === null
+                                        }
+                                        onClick={() => {
+                                            setCurrentPage(currentPage + 1)
+                                        }}
+                                    >
+                                        Next
+                                    </Button>
+                                </div>
+                            </div>
+                        )}
                 </div>
             </div>
         </div>

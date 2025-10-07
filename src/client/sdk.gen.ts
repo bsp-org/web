@@ -3,19 +3,16 @@
 import type { Client, Options as Options2, TDataShape } from './client'
 import { client } from './client.gen'
 import type {
-    GetContentApiContentGetData,
-    GetContentApiContentGetErrors,
-    GetContentApiContentGetResponses,
     GetTranslationMetadataApiTranslationsTranslationIdMetadataGetData,
     GetTranslationMetadataApiTranslationsTranslationIdMetadataGetErrors,
     GetTranslationMetadataApiTranslationsTranslationIdMetadataGetResponses,
     GetTranslationsApiTranslationsGetData,
     GetTranslationsApiTranslationsGetResponses,
+    GetVersesApiVersesGetData,
+    GetVersesApiVersesGetErrors,
+    GetVersesApiVersesGetResponses,
     HealthHealthGetData,
     HealthHealthGetResponses,
-    SearchVersesApiSearchGetData,
-    SearchVersesApiSearchGetErrors,
-    SearchVersesApiSearchGetResponses,
 } from './types.gen'
 
 export type Options<
@@ -46,6 +43,7 @@ export const healthHealthGet = <ThrowOnError extends boolean = false>(
         unknown,
         ThrowOnError
     >({
+        responseType: 'json',
         url: '/health',
         ...options,
     })
@@ -64,6 +62,7 @@ export const getTranslationsApiTranslationsGet = <
         unknown,
         ThrowOnError
     >({
+        responseType: 'json',
         url: '/api/translations',
         ...options,
     })
@@ -72,7 +71,7 @@ export const getTranslationsApiTranslationsGet = <
 /**
  * Get Translation Metadata
  * Get complete metadata for a translation including:
- * - All books with their IDs, names, and display names
+ * - All books with their IDs, names, and display_name names
  * - Chapter counts per book
  * - Verse counts per chapter
  * - Total statistics
@@ -90,43 +89,46 @@ export const getTranslationMetadataApiTranslationsTranslationIdMetadataGet = <
         GetTranslationMetadataApiTranslationsTranslationIdMetadataGetErrors,
         ThrowOnError
     >({
+        responseType: 'json',
         url: '/api/translations/{translation_id}/metadata',
         ...options,
     })
 }
 
 /**
- * Search Verses
+ * Get Verses
+ * Unified endpoint for Bible verse retrieval with flexible filtering.
+ *
+ * **Features:**
+ * - Text search with `q` parameter (exact or normalized matching)
+ * - Point retrieval using `book`, `chapter`, `verse` parameters
+ * - Range retrieval using `from_*` and `to_*` parameters
+ * - Combine search with location constraints
+ * - Optional match highlighting
+ *
+ * **Parameter Types (mutually exclusive):**
+ * - Point queries: Use `book` [+ `chapter`] [+ `verse`]
+ * - Range queries: Use `from_book` + `to_*` parameters
+ *
+ * **Examples:**
+ * - Search: `/api/verses?translation_id=eng-kjv&q=love`
+ * - Single verse: `/api/verses?translation_id=eng-kjv&book=john&chapter=3&verse=16`
+ * - Full chapter: `/api/verses?translation_id=eng-kjv&book=john&chapter=3`
+ * - Full book: `/api/verses?translation_id=eng-kjv&book=john`
+ * - Verse range: `/api/verses?translation_id=eng-kjv&from_book=john&from_chapter=3&from_verse=16&to_verse=18`
+ * - Chapter range: `/api/verses?translation_id=eng-kjv&from_book=john&from_chapter=3&to_chapter=5`
+ * - Search in chapter: `/api/verses?translation_id=eng-kjv&book=john&chapter=3&q=love`
  */
-export const searchVersesApiSearchGet = <ThrowOnError extends boolean = false>(
-    options: Options<SearchVersesApiSearchGetData, ThrowOnError>,
+export const getVersesApiVersesGet = <ThrowOnError extends boolean = false>(
+    options: Options<GetVersesApiVersesGetData, ThrowOnError>,
 ) => {
     return (options.client ?? client).get<
-        SearchVersesApiSearchGetResponses,
-        SearchVersesApiSearchGetErrors,
+        GetVersesApiVersesGetResponses,
+        GetVersesApiVersesGetErrors,
         ThrowOnError
     >({
-        url: '/api/search',
-        ...options,
-    })
-}
-
-/**
- * Get Content
- * Fetch Bible content with flexible range support:
- * - Single verse: start_book, start_chapter, start_verse
- * - Full chapter: start_book, start_chapter (no start_verse)
- * - Range: start_book/chapter/verse to end_book/chapter/verse
- */
-export const getContentApiContentGet = <ThrowOnError extends boolean = false>(
-    options: Options<GetContentApiContentGetData, ThrowOnError>,
-) => {
-    return (options.client ?? client).get<
-        GetContentApiContentGetResponses,
-        GetContentApiContentGetErrors,
-        ThrowOnError
-    >({
-        url: '/api/content',
+        responseType: 'json',
+        url: '/api/verses',
         ...options,
     })
 }
