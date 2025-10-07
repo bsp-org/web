@@ -10,6 +10,7 @@ import {
 import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
 
 import Header from './components/Header'
+import { NuqsAdapter } from 'nuqs/adapters/tanstack-router'
 
 import * as TanStackQueryProvider from './integrations/tanstack-query/root-provider.tsx'
 import 'src/settings.ts'
@@ -19,14 +20,16 @@ import reportWebVitals from './reportWebVitals.ts'
 
 import Home from './pages/Home.tsx'
 import Search from './pages/Search.tsx'
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 
 const rootRoute = createRootRoute({
     component: () => (
-        <div>
+        <NuqsAdapter>
             <Header />
             <Outlet />
             <TanStackRouterDevtools />
-        </div>
+            <ReactQueryDevtools buttonPosition='bottom-right' />
+        </NuqsAdapter>
     ),
 })
 

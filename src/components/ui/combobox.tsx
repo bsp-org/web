@@ -23,17 +23,18 @@ export default function Combobox({
     options,
     placeholder,
     className,
+    value,
     onChange,
     searchEnabled,
 }: {
     options: { value: string; label: string }[]
     placeholder: string
     className: string
+    value: string
     onChange: (value: string) => void
     searchEnabled: boolean
 }) {
     const [open, setOpen] = React.useState(false)
-    const [value, setValue] = React.useState('')
 
     React.useEffect(() => {
         onChange?.(value)
@@ -66,7 +67,7 @@ export default function Combobox({
                                     key={option.value}
                                     value={option.value}
                                     onSelect={(currentValue) => {
-                                        setValue(
+                                        onChange(
                                             currentValue === value
                                                 ? ''
                                                 : currentValue,
