@@ -124,7 +124,7 @@ export const getTranslationMetadataApiTranslationsTranslationIdMetadataGetQueryK
 /**
  * Get Translation Metadata
  * Get complete metadata for a translation including:
- * - All books with their IDs, names, and display names
+ * - All books with their IDs, names, and display_name names
  * - Chapter counts per book
  * - Verse counts per chapter
  * - Total statistics
@@ -166,7 +166,6 @@ export const getVersesApiVersesGetQueryKey = (
  * - Point retrieval using `book`, `chapter`, `verse` parameters
  * - Range retrieval using `from_*` and `to_*` parameters
  * - Combine search with location constraints
- * - Support for multiple translations
  * - Optional match highlighting
  *
  * **Parameter Types (mutually exclusive):**
@@ -174,14 +173,13 @@ export const getVersesApiVersesGetQueryKey = (
  * - Range queries: Use `from_book` + `to_*` parameters
  *
  * **Examples:**
- * - Search: `/api/verses?translation_ids=eng-kjv&q=love`
- * - Single verse: `/api/verses?translation_ids=eng-kjv&book=john&chapter=3&verse=16`
- * - Full chapter: `/api/verses?translation_ids=eng-kjv&book=john&chapter=3`
- * - Full book: `/api/verses?translation_ids=eng-kjv&book=john`
- * - Verse range: `/api/verses?translation_ids=eng-kjv&from_book=john&from_chapter=3&from_verse=16&to_verse=18`
- * - Chapter range: `/api/verses?translation_ids=eng-kjv&from_book=john&from_chapter=3&to_chapter=5`
- * - Search in chapter: `/api/verses?translation_ids=eng-kjv&book=john&chapter=3&q=love`
- * - Multiple translations: `/api/verses?translation_ids=eng-kjv,spa-rvr&book=john&chapter=3&verse=16`
+ * - Search: `/api/verses?translation_id=eng-kjv&q=love`
+ * - Single verse: `/api/verses?translation_id=eng-kjv&book=john&chapter=3&verse=16`
+ * - Full chapter: `/api/verses?translation_id=eng-kjv&book=john&chapter=3`
+ * - Full book: `/api/verses?translation_id=eng-kjv&book=john`
+ * - Verse range: `/api/verses?translation_id=eng-kjv&from_book=john&from_chapter=3&from_verse=16&to_verse=18`
+ * - Chapter range: `/api/verses?translation_id=eng-kjv&from_book=john&from_chapter=3&to_chapter=5`
+ * - Search in chapter: `/api/verses?translation_id=eng-kjv&book=john&chapter=3&q=love`
  */
 export const getVersesApiVersesGetOptions = (
     options: Options<GetVersesApiVersesGetData>,
@@ -250,7 +248,6 @@ export const getVersesApiVersesGetInfiniteQueryKey = (
  * - Point retrieval using `book`, `chapter`, `verse` parameters
  * - Range retrieval using `from_*` and `to_*` parameters
  * - Combine search with location constraints
- * - Support for multiple translations
  * - Optional match highlighting
  *
  * **Parameter Types (mutually exclusive):**
@@ -258,14 +255,13 @@ export const getVersesApiVersesGetInfiniteQueryKey = (
  * - Range queries: Use `from_book` + `to_*` parameters
  *
  * **Examples:**
- * - Search: `/api/verses?translation_ids=eng-kjv&q=love`
- * - Single verse: `/api/verses?translation_ids=eng-kjv&book=john&chapter=3&verse=16`
- * - Full chapter: `/api/verses?translation_ids=eng-kjv&book=john&chapter=3`
- * - Full book: `/api/verses?translation_ids=eng-kjv&book=john`
- * - Verse range: `/api/verses?translation_ids=eng-kjv&from_book=john&from_chapter=3&from_verse=16&to_verse=18`
- * - Chapter range: `/api/verses?translation_ids=eng-kjv&from_book=john&from_chapter=3&to_chapter=5`
- * - Search in chapter: `/api/verses?translation_ids=eng-kjv&book=john&chapter=3&q=love`
- * - Multiple translations: `/api/verses?translation_ids=eng-kjv,spa-rvr&book=john&chapter=3&verse=16`
+ * - Search: `/api/verses?translation_id=eng-kjv&q=love`
+ * - Single verse: `/api/verses?translation_id=eng-kjv&book=john&chapter=3&verse=16`
+ * - Full chapter: `/api/verses?translation_id=eng-kjv&book=john&chapter=3`
+ * - Full book: `/api/verses?translation_id=eng-kjv&book=john`
+ * - Verse range: `/api/verses?translation_id=eng-kjv&from_book=john&from_chapter=3&from_verse=16&to_verse=18`
+ * - Chapter range: `/api/verses?translation_id=eng-kjv&from_book=john&from_chapter=3&to_chapter=5`
+ * - Search in chapter: `/api/verses?translation_id=eng-kjv&book=john&chapter=3&q=love`
  */
 export const getVersesApiVersesGetInfiniteOptions = (
     options: Options<GetVersesApiVersesGetData>,

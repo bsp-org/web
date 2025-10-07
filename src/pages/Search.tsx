@@ -5,7 +5,6 @@ import {
     getTranslationsApiTranslationsGetOptions,
     getVersesApiVersesGetOptions,
 } from 'src/client/@tanstack/react-query.gen'
-import type { TranslationInfo } from 'src/client/types.gen'
 import Verse from 'src/components/local/Verse'
 import { Button } from 'src/components/ui/button'
 import { Checkbox } from 'src/components/ui/checkbox'
@@ -32,7 +31,7 @@ export default function Search() {
         ...getVersesApiVersesGetOptions({
             query: {
                 q: searchText,
-                translation_ids: translationId || '',
+                translation_id: translationId || '',
                 exact: exactMatch,
                 page: currentPage,
             },
@@ -53,14 +52,6 @@ export default function Search() {
         value: translation.public_id,
         label: translation.abbreviation,
     }))
-
-    const translationsById = translationList.reduce(
-        (acc, translation) => {
-            acc[translation.public_id] = translation
-            return acc
-        },
-        {} as Record<string, TranslationInfo>,
-    )
 
     if (translationOptionsQuery.isLoading) {
         return <Spinner />
@@ -127,70 +118,62 @@ export default function Search() {
                         Verses
                     </div>
                     <div className='flex justify-center'>
-                        {searchQuery.data?.results && (
+                        {!searchQuery.data?.verses && (
+                            <div className='flex justify-center text-gray-500'>
+                                No DATA
+                            </div>
+                        )}
+                        {searchQuery.data?.verses && (
                             <div>
-                                <span className='text-gray-500'>
-                                    {searchQuery.data.pagination.total_items} verses found
+                                <span className='flex text-gray-500 mb-'>
+                                    {searchQuery.data.pagination.total_items}{' '}
+                                    verses found
                                 </span>
-                                {searchQuery.data.results.map((translation) => (
-                                    <div key={translation.translation_id}>
-                                        <div className='text-center text-lg font-bold mb-4'>
-                                            {
-                                                translationsById[
-                                                    translation.translation_id
-                                                ]?.full_name
-                                            }
-                                        </div>
-                                        {!translation.verses.length && (
-                                            <div className='flex justify-center text-gray-500'>
-                                                No DATA
-                                            </div>
-                                        )}
-                                        {translation.verses.map((verse) => (
-                                            <Verse
-                                                key={`${verse.book.id}-${verse.chapter}-${verse.verse}`}
-                                                verse={verse}
-                                            />
-                                        ))}
-                                    </div>
+                                {searchQuery.data?.verses.map((verse) => (
+                                    <Verse
+                                        key={`${verse.book.id}-${verse.chapter}-${verse.verse}`}
+                                        verse={verse}
+                                    />
                                 ))}
                             </div>
                         )}
                     </div>
-                    {searchQuery.data?.pagination.total_pages && searchQuery.data.pagination.total_pages > 1 && (
-                        <div className='flex justify-center gap-4 mt-10 mb-10'>
-                        <div className='flex'>
-                            <Button
-                                disabled={
-                                    searchQuery.data?.pagination.previous ===
-                                    null
-                                }
-                                onClick={() => {
-                                    setCurrentPage(currentPage - 1)
-                                }}
-                            >
-                                Previous
-                            </Button>
-                        </div>
-                        <div className='flex'>
-                            <span className='text-gray-500 content-center'>
-                                {currentPage}
-                            </span>
-                        </div>
-                        <div className='flex'>
-                            <Button
-                                disabled={
-                                    searchQuery.data?.pagination.next === null
-                                }
-                                onClick={() => {
-                                    setCurrentPage(currentPage + 1)
-                                }}
-                            >
-                                Next
-                            </Button>
-                        </div>
-                    </div>
-                    )}
+                    {searchQuery.data &&
+                        searchQuery.data.pagination.total_pages > 1 && (
+                            <div className='flex justify-center gap-4 mt-10 mb-10'>
+                                <div className='flex'>
+                                    <Button
+                                        disabled={
+                                            searchQuery.data?.pagination
+                                                .previous === null
+                                        }
+                                        onClick={() => {
+                                            setCurrentPage(currentPage - 1)
+                                        }}
+                                    >
+                                        Previous
+                                    </Button>
+                                </div>
+                                <div className='flex'>
+                                    <span className='text-gray-500 content-center'>
+                                        {currentPage}
+                                    </span>
+                                </div>
+                                <div className='flex'>
+                                    <Button
+                                        disabled={
+                                            searchQuery.data?.pagination
+                                                .next === null
+                                        }
+                                        onClick={() => {
+                                            setCurrentPage(currentPage + 1)
+                                        }}
+                                    >
+                                        Next
+                                    </Button>
+                                </div>
+                            </div>
+                        )}
                 </div>
             </div>
         </div>

@@ -18,9 +18,9 @@ export type BookInfo = {
      */
     name: string
     /**
-     * Displan Name
+     * Display Name
      */
-    displan_name: string
+    display_name: string
 }
 
 /**
@@ -37,9 +37,9 @@ export type BookMetadata = {
      */
     name: string
     /**
-     * Displan Name
+     * Display Name
      */
-    displan_name: string
+    display_name: string
     /**
      * Chapter Count
      */
@@ -103,20 +103,6 @@ export type PaginationInfo = {
      * Next
      */
     next: string | null
-}
-
-/**
- * TranslationContent
- */
-export type TranslationContent = {
-    /**
-     * Translation Id
-     */
-    translation_id: string
-    /**
-     * Verses
-     */
-    verses: Array<VerseData>
 }
 
 /**
@@ -188,9 +174,9 @@ export type TranslationMetadata = {
 export type UnifiedResponse = {
     pagination: PaginationInfo
     /**
-     * Results
+     * Verses
      */
-    results: Array<TranslationContent>
+    verses: Array<VerseData>
 }
 
 /**
@@ -309,10 +295,10 @@ export type GetVersesApiVersesGetData = {
     path?: never
     query: {
         /**
-         * Translation Ids
-         * Comma-separated translation IDs
+         * Translation Id
+         * Translation ID
          */
-        translation_ids: string
+        translation_id: string
         /**
          * Q
          * Search query (optional, can be combined with location constraints)
