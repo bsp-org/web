@@ -1,8 +1,7 @@
 'use client'
 
 import * as React from 'react'
-import { CheckIcon, ChevronsUpDownIcon } from 'lucide-react'
-
+import { CheckIcon, ChevronsUpDownIcon, XIcon } from 'lucide-react'
 import { cn } from 'src/lib/utils'
 import { Button } from 'src/components/ui/button'
 import {
@@ -18,6 +17,17 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from 'src/components/ui/popover'
+import { filter, includes, toLower } from 'lodash'
+
+interface ComboboxProps {
+    options: { value: string; label: string }[]
+    placeholder: string
+    className?: string
+    value: string
+    onChange: (value: string) => void
+    searchEnabled?: boolean
+    clearable?: boolean
+}
 
 export default function Combobox({
     options,
@@ -25,20 +35,18 @@ export default function Combobox({
     className,
     value,
     onChange,
-    searchEnabled,
-}: {
-    options: { value: string; label: string }[]
-    placeholder: string
-    className: string
-    value: string
-    onChange: (value: string) => void
-    searchEnabled: boolean
-}) {
+    searchEnabled = true,
+    clearable = true,
+}: ComboboxProps) {
     const [open, setOpen] = React.useState(false)
+    const selectedOption = options.find((option) => option.value === value)
+    const [searchValue, setSearchValue] = React.useState('')
 
-    React.useEffect(() => {
-        onChange?.(value)
-    }, [value, onChange])
+    const filteredOptions = searchValue
+        ? filter(options, (option) => {
+              return includes(toLower(option.label), toLower(searchValue))
+          })
+        : options
 
     return (
         <Popover open={open} onOpenChange={setOpen}>
@@ -47,22 +55,49 @@ export default function Combobox({
                     variant='outline'
                     role='combobox'
                     aria-expanded={open}
-                    className={cn('w-[200px] justify-between', className)}
+                    className={cn(
+                        'min-w-[200px] justify-between relative',
+                        className,
+                    )}
                 >
-                    {value
-                        ? options.find((option) => option.value === value)
-                              ?.label
-                        : placeholder}
-                    <ChevronsUpDownIcon className='ml-2 h-4 w-4 shrink-0 opacity-50' />
+                    <span className='truncate'>
+                        {selectedOption ? selectedOption.label : placeholder}
+                    </span>
+
+                    <div className='flex items-center gap-1'>
+                        {clearable && value && (
+                            <span
+                                className='cursor-pointer'
+                                onClick={(e) => {
+                                    onChange('')
+                                    e.stopPropagation()
+                                }}
+                            >
+                                <XIcon className='h-4 w-4 opacity-60 hover:opacity-100 cursor-pointer z-10 cursor-pointer' />
+                            </span>
+                        )}
+                        <ChevronsUpDownIcon className='h-4 w-4 opacity-50' />
+                    </div>
                 </Button>
             </PopoverTrigger>
-            <PopoverContent className='w-[200px] p-0'>
-                <Command>
-                    {searchEnabled && <CommandInput placeholder='Search...' />}
+
+            <PopoverContent className='min-w-[200px] p-0'>
+                <Command shouldFilter={false}>
+                    {searchEnabled && options.length > 3 && (
+                        <CommandInput
+                            placeholder='Search...'
+                            value={searchValue}
+                            onValueChange={setSearchValue}
+                        />
+                    )}
                     <CommandList>
-                        <CommandEmpty>No options available.</CommandEmpty>
+                        <CommandEmpty>
+                            {searchEnabled
+                                ? 'No matches found.'
+                                : 'No options available.'}
+                        </CommandEmpty>
                         <CommandGroup>
-                            {options.map((option) => (
+                            {filteredOptions.map((option) => (
                                 <CommandItem
                                     key={option.value}
                                     value={option.value}
