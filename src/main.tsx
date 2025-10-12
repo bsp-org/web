@@ -6,6 +6,7 @@ import {
     createRootRoute,
     createRoute,
     createRouter,
+    redirect,
 } from '@tanstack/react-router'
 import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
 
@@ -18,7 +19,6 @@ import 'src/settings.ts'
 import './styles.css'
 import reportWebVitals from './reportWebVitals.ts'
 
-import Home from './pages/Home.tsx'
 import Search from './pages/Search.tsx'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 
@@ -36,7 +36,9 @@ const rootRoute = createRootRoute({
 const indexRoute = createRoute({
     getParentRoute: () => rootRoute,
     path: '/',
-    component: Home,
+    loader: () => {
+        throw redirect({ to: '/search' })
+    },
 })
 
 const routeTree = rootRoute.addChildren([
