@@ -134,6 +134,9 @@ export default function Search() {
                                         setSearchText(searchInputValue)
                                     }
                                 }}
+                                onBlur={() => {
+                                    setSearchText(searchInputValue)
+                                }}
                             />
                             <Button
                                 disabled={
