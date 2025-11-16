@@ -1,7 +1,7 @@
 import type { CheckedState } from '@radix-ui/react-checkbox'
 import { useQuery } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
-import { find } from 'lodash'
+import { find, has, isEmpty, omit } from 'lodash'
 import {
     getTranslationMetadataApiTranslationsTranslationIdMetadataGetOptions,
     getTranslationsApiTranslationsGetOptions,
@@ -16,8 +16,12 @@ import { Label } from 'src/components/ui/label'
 import { parseAsBoolean, useQueryState, parseAsInteger } from 'nuqs'
 import Spinner from 'src/components/local/Spinner'
 import { MagnifyingGlassIcon } from '@phosphor-icons/react'
+import type { VerseData } from 'src/client/types.gen'
+import TextSelectionDialog from 'src/components/local/TextSelectionDialog'
+import { useTranslation } from 'react-i18next'
 
 export default function Search() {
+    const { t } = useTranslation()
     const [searchText, setSearchText] = useQueryState('search')
     const [exactMatch, setExactMatch] = useQueryState(
         'exact',
@@ -31,6 +35,9 @@ export default function Search() {
     )
     const [bookID, setBookID] = useQueryState('book', parseAsInteger)
     const [chapter, setChapter] = useQueryState('chapter', parseAsInteger)
+    const [selectedVerses, setSelectedVerses] = useState<{
+        [key: string]: VerseData
+    }>({})
 
     const searchQuery = useQuery({
         ...getVersesApiVersesGetOptions({
@@ -99,6 +106,10 @@ export default function Search() {
 
     return (
         <div>
+            <TextSelectionDialog
+                open={!isEmpty(selectedVerses)}
+                selectedVerses={selectedVerses}
+            />
             <div className='flex w-full justify-center'>
                 <div className='flex flex-col w-full max-w-4xl justify-center items-center'>
                     <div className='flex mb-3'>
@@ -118,7 +129,7 @@ export default function Search() {
                                 className='ml-1'
                                 htmlFor='exact-match-checkbox'
                             >
-                                Exact
+                                {t('Exact')}
                             </Label>
                         </div>
                         <div className='flex relative'>
@@ -128,7 +139,7 @@ export default function Search() {
                                     setSearchInputValue(e.target.value)
                                 }}
                                 className='w-90 mr-2 h-12 pr-12'
-                                placeholder='Type something'
+                                placeholder={t('Type something')}
                                 onKeyDown={(e) => {
                                     if (e.key === 'Enter') {
                                         setSearchText(searchInputValue)
@@ -162,7 +173,7 @@ export default function Search() {
                                     setTranslationId(value)
                                 }
                             }}
-                            placeholder='Select translation'
+                            placeholder={t('Select translation')}
                             options={translationOptions}
                         />
                         <Combobox
@@ -177,7 +188,7 @@ export default function Search() {
                                 }
                             }}
                             options={bookOptions}
-                            placeholder='Select book'
+                            placeholder={t('Select book')}
                         />
                         <Combobox
                             searchEnabled={true}
@@ -191,7 +202,7 @@ export default function Search() {
                                 }
                             }}
                             options={chapterOptions}
-                            placeholder='Select chapter'
+                            placeholder={t('Select chapter')}
                         />
                     </div>
                 </div>
@@ -199,33 +210,69 @@ export default function Search() {
             <div className='flex w-full justify-center'>
                 <div className='flex-col w-200 justify-center'>
                     <div className='flex justify-center text-3xl font-bold mb-1 mt-10'>
-                        Verses
+                        {t('Verses')}
                     </div>
                     <div className='flex justify-center'>
                         {!searchQuery.data?.verses && (
                             <div className='flex justify-center text-gray-500'>
-                                No DATA
+                                {t('No data')}
                             </div>
                         )}
                         {searchQuery.data?.verses && (
                             <div>
-                                <span className='flex text-gray-500 mb-'>
-                                    {searchQuery.data.pagination.total_items}{' '}
-                                    verses found
-                                </span>
-                                {searchQuery.data?.verses.map((verse) => (
-                                    <Verse
-                                        key={`${verse.book.id}-${verse.chapter}-${verse.verse}`}
-                                        verse={verse}
-                                    />
-                                ))}
+                                {searchQuery.data?.verses.map((verse) => {
+                                    const key = `${verse.book.id}-${verse.chapter}-${verse.verse}`
+
+                                    return (
+                                        <Verse
+                                            key={key}
+                                            verse={verse}
+                                            isSelected={has(
+                                                selectedVerses,
+                                                key,
+                                            )}
+                                            onClick={() => {
+                                                if (has(selectedVerses, key)) {
+                                                    setSelectedVerses({
+                                                        ...omit(
+                                                            selectedVerses,
+                                                            key,
+                                                        ),
+                                                    })
+                                                } else {
+                                                    setSelectedVerses({
+                                                        ...selectedVerses,
+                                                        [key]: verse,
+                                                    })
+                                                }
+                                            }}
+                                        />
+                                    )
+                                })}
                             </div>
                         )}
                     </div>
                     {searchQuery.data &&
                         searchQuery.data.pagination.total_pages > 1 && (
-                            <div className='flex justify-center gap-4 mt-10 mb-10'>
-                                <div className='flex'>
+                            <div className='flex justify-between mt-10 mb-10'>
+                                <div className='justify-start'>
+                                    <span className='text-gray-500 content-center'>
+                                        {(currentPage - 1) *
+                                            searchQuery.data.pagination
+                                                .page_size +
+                                            1}
+                                        -
+                                        {currentPage *
+                                            searchQuery.data.pagination
+                                                .page_size}{' '}
+                                        {t('out of')}{' '}
+                                        {
+                                            searchQuery.data.pagination
+                                                .total_items
+                                        }
+                                    </span>
+                                </div>
+                                <div className='justify-end gap-4 '>
                                     <Button
                                         className='cursor-pointer'
                                         disabled={
@@ -236,15 +283,11 @@ export default function Search() {
                                             setCurrentPage(currentPage - 1)
                                         }}
                                     >
-                                        Previous
+                                        {t('Previous')}
                                     </Button>
-                                </div>
-                                <div className='flex'>
-                                    <span className='text-gray-500 content-center'>
+                                    <span className='text-gray-500 content-center mr-2 ml-2'>
                                         {currentPage}
                                     </span>
-                                </div>
-                                <div className='flex'>
                                     <Button
                                         className='cursor-pointer'
                                         disabled={
@@ -255,7 +298,7 @@ export default function Search() {
                                             setCurrentPage(currentPage + 1)
                                         }}
                                     >
-                                        Next
+                                        {t('Next')}
                                     </Button>
                                 </div>
                             </div>
