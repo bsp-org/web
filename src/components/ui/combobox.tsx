@@ -18,6 +18,7 @@ import {
     PopoverTrigger,
 } from 'src/components/ui/popover'
 import { filter, includes, toLower } from 'lodash'
+import { useTranslation } from 'react-i18next'
 
 interface ComboboxProps {
     options: { value: string; label: string }[]
@@ -38,6 +39,7 @@ export default function Combobox({
     searchEnabled = true,
     clearable = true,
 }: ComboboxProps) {
+    const { t } = useTranslation()
     const [open, setOpen] = React.useState(false)
     const selectedOption = options.find((option) => option.value === value)
     const [searchValue, setSearchValue] = React.useState('')
@@ -85,7 +87,7 @@ export default function Combobox({
                 <Command shouldFilter={false}>
                     {searchEnabled && options.length > 3 && (
                         <CommandInput
-                            placeholder='Search...'
+                            placeholder={t('Search...')}
                             value={searchValue}
                             onValueChange={setSearchValue}
                         />
@@ -93,8 +95,8 @@ export default function Combobox({
                     <CommandList>
                         <CommandEmpty>
                             {searchEnabled
-                                ? 'No matches found.'
-                                : 'No options available.'}
+                                ? t('No matches found.')
+                                : t('No options available.')}
                         </CommandEmpty>
                         <CommandGroup>
                             {filteredOptions.map((option) => (

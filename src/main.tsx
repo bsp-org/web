@@ -15,6 +15,7 @@ import { NuqsAdapter } from 'nuqs/adapters/tanstack-router'
 
 import * as TanStackQueryProvider from './integrations/tanstack-query/root-provider.tsx'
 import 'src/settings.ts'
+import 'src/i18n.ts'
 
 import './styles.css'
 import reportWebVitals from './reportWebVitals.ts'
