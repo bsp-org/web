@@ -19,13 +19,16 @@ interface TextSelectionDialogProps {
 }
 
 function summarizeSequence(versesNumbers: number[]) {
-    if (!versesNumbers.length) return ''
+    if (!versesNumbers.length) return []
 
-    const result = versesNumbers.reduce((acc, num, i) => {
+    const result = versesNumbers.reduce<Array<[number, number?]>>((acc, num, i) => {
         // Start of a new range
         if (i === 0) acc.push([num])
         // Continue consecutive run
-        else if (num === versesNumbers[i - 1] + 1) acc.at(-1)[1] = num
+        else if (num === versesNumbers[i - 1]! + 1) {
+            const last = acc.at(-1)
+            if (last) last[1] = num
+        }
         // Start new run
         else acc.push([num])
         return acc
@@ -60,7 +63,7 @@ export default function TextSelectionDialog({
                 const versesToCopy = map(
                     range(start, stop),
                     (num) => versesByNumber[num],
-                )
+                ).filter((verse): verse is VerseData => verse !== undefined)
                 const versesText = map(
                     versesToCopy,
                     (verse) => `${verse.verse}. ${verse.text}`,
