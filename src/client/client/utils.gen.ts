@@ -192,9 +192,8 @@ export const mergeHeaders = (
                 delete mergedHeaders[key]
             } else if (Array.isArray(value)) {
                 for (const v of value) {
-                    // @ts-expect-error
                     mergedHeaders[key] = [
-                        ...(mergedHeaders[key] ?? []),
+                        ...((Array.isArray(mergedHeaders[key]) ? mergedHeaders[key] : []) as unknown[]),
                         v as string,
                     ]
                 }
