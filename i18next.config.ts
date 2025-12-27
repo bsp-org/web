@@ -10,5 +10,6 @@ export default defineConfig({
     output: "src/locales/{{language}}/{{namespace}}.json",
     keySeparator: false,
     nsSeparator: false,
+    indentation: 4,
   },
 });

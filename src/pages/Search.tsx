@@ -15,7 +15,7 @@ import { Input } from 'src/components/ui/input'
 import { Label } from 'src/components/ui/label'
 import { parseAsBoolean, useQueryState, parseAsInteger } from 'nuqs'
 import Spinner from 'src/components/local/Spinner'
-import { MagnifyingGlassIcon } from '@phosphor-icons/react'
+import { MagnifyingGlassIcon, TrashIcon } from '@phosphor-icons/react'
 import type { VerseData } from 'src/client/types.gen'
 import TextSelectionDialog from 'src/components/local/TextSelectionDialog'
 import { useTranslation } from 'react-i18next'
@@ -175,6 +175,21 @@ export default function Search() {
                                 <MagnifyingGlassIcon size={32} />
                             </Button>
                         </div>
+                        <div className='flex items-center'>
+                            <Button
+                                variant='secondary'
+                                className='flex items-center ml-3 cursor-pointer'
+                                onClick={() => {
+                                    setSearchInputValue('')
+                                    setSearchText('')
+                                    setBookID(null)
+                                    setChapter(null)
+                                }}
+                            >
+                                <TrashIcon size={24} />
+                                {t('Clear filters')}
+                            </Button>
+                        </div>
                     </div>
                     <div className='flex gap-2'>
                         <Combobox
@@ -316,37 +331,36 @@ export default function Search() {
                                 </div>
                             </div>
                         )}
-                        {searchQuery.data && isReadingMode && (
-                            <div className='flex justify-between mt-10 mb-10'>
-                                <div className='justify-start'>
-                                </div>
-                                <div className='justify-end gap-4 '>
-                                    <Button
-                                        className='cursor-pointer'
-                                        disabled={
-                                            chapter === 1
-                                        }
-                                        onClick={() => {
-                                            setChapter(chapter - 1)
-                                        }}
-                                    >
-                                        {t('Previous chapter')}
-                                    </Button>
-                                    <span className='text-gray-500 content-center mr-2 ml-2'>
-                                        {chapter}
-                                    </span>
-                                    <Button
-                                        className='cursor-pointer'
-                                        disabled={currentBook?.chapters.length === chapter}
-                                        onClick={() => {
-                                            setChapter(chapter + 1)
-                                        }}
-                                    >
-                                        {t('Next chapter')}
-                                    </Button>
-                                </div>
+                    {searchQuery.data && isReadingMode && (
+                        <div className='flex justify-between mt-10 mb-10'>
+                            <div className='justify-start'></div>
+                            <div className='justify-end gap-4 '>
+                                <Button
+                                    className='cursor-pointer'
+                                    disabled={chapter === 1}
+                                    onClick={() => {
+                                        setChapter(chapter - 1)
+                                    }}
+                                >
+                                    {t('Previous chapter')}
+                                </Button>
+                                <span className='text-gray-500 content-center mr-2 ml-2'>
+                                    {chapter}
+                                </span>
+                                <Button
+                                    className='cursor-pointer'
+                                    disabled={
+                                        currentBook?.chapters.length === chapter
+                                    }
+                                    onClick={() => {
+                                        setChapter(chapter + 1)
+                                    }}
+                                >
+                                    {t('Next chapter')}
+                                </Button>
                             </div>
-                        )}
+                        </div>
+                    )}
                 </div>
             </div>
         </div>
