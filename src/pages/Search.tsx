@@ -11,7 +11,12 @@ import Verse from 'src/components/local/Verse'
 import { Button } from 'src/components/ui/button'
 import Combobox from 'src/components/ui/combobox'
 import { Input } from 'src/components/ui/input'
-import { useQueryState, parseAsInteger, parseAsStringEnum } from 'nuqs'
+import {
+    useQueryState,
+    parseAsInteger,
+    parseAsStringEnum,
+    parseAsString,
+} from 'nuqs'
 import Spinner from 'src/components/local/Spinner'
 import { MagnifyingGlassIcon, TrashIcon } from '@phosphor-icons/react'
 import type { VerseData } from 'src/client/types.gen'
@@ -28,13 +33,19 @@ export default function Search() {
             SearchType.FUZZY,
         ),
     )
-    const [translationId, setTranslationId] = useQueryState('translation')
+    const [translationId, setTranslationId] = useQueryState(
+        'translation',
+        parseAsString.withDefault('ro-vdcc'),
+    )
     const [searchInputValue, setSearchInputValue] = useState(searchText || '')
     const [currentPage, setCurrentPage] = useQueryState(
         'page',
         parseAsInteger.withDefault(1),
     )
-    const [bookID, setBookID] = useQueryState('book', parseAsInteger)
+    const [bookID, setBookID] = useQueryState(
+        'book',
+        parseAsInteger.withDefault(1),
+    )
     const [chapter, setChapter] = useQueryState('chapter', parseAsInteger)
 
     const [selectedVerses, setSelectedVerses] = useState<{
@@ -46,7 +57,7 @@ export default function Search() {
         ...getVersesApiVersesGetOptions({
             query: {
                 q: searchText,
-                translation_id: translationId || '',
+                translation_id: translationId,
                 book: bookID ? bookID.toString() : null,
                 chapter: chapter ? chapter : null,
                 exact: searchType === SearchType.EXACT ? true : false,
