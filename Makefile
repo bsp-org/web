@@ -14,7 +14,7 @@ build:
 .PHONY: deploy
 deploy:
 	@echo "Image pushed to remote server. Restarting...."
-	ssh $(REMOTE_HOST) 'su - app -c "cd /www/app && export WEB_TAG=$(IMAGE_TAG) && podman-compose pull && podman-compose up -d web"'
+	ssh $(REMOTE_HOST) 'sudo su - app -c "cd /www/app && export WEB_TAG=$(IMAGE_TAG) && podman-compose pull && podman-compose up -d web"'
 
 
 
