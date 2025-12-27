@@ -15,7 +15,10 @@
     "Search...": "Caută...",
     "Select book": "Selectează carte",
     "Select chapter": "Selectează capitol",
+    "Select search type": "Selectează tipul de căutare",
     "Select translation": "Selectează traducere",
+    "Semantic": "Semantic",
+    "Fuzzy": "Inexact",
     "Type something": "Text de căutat",
     "Verses": "Versete"
 }
