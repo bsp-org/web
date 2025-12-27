@@ -193,7 +193,9 @@ export const mergeHeaders = (
             } else if (Array.isArray(value)) {
                 for (const v of value) {
                     mergedHeaders[key] = [
-                        ...((Array.isArray(mergedHeaders[key]) ? mergedHeaders[key] : []) as unknown[]),
+                        ...((Array.isArray(mergedHeaders[key])
+                            ? mergedHeaders[key]
+                            : []) as unknown[]),
                         v as string,
                     ]
                 }

@@ -9,30 +9,29 @@ import {
 } from 'src/components/ui/dialog'
 import type { VerseData } from 'src/client/types.gen'
 import { groupBy, map, sortBy, range, keyBy } from 'lodash'
-import { CopySimpleIcon } from '@phosphor-icons/react'
+import { CopySimpleIcon, TrashIcon } from '@phosphor-icons/react'
 import { Button } from '../ui/button'
 import { useEffect, useState } from 'react'
-
-interface TextSelectionDialogProps {
-    open: boolean
-    selectedVerses: { [key: string]: VerseData }
-}
+import { useTranslation } from 'react-i18next'
 
 function summarizeSequence(versesNumbers: number[]) {
     if (!versesNumbers.length) return []
 
-    const result = versesNumbers.reduce<Array<[number, number?]>>((acc, num, i) => {
-        // Start of a new range
-        if (i === 0) acc.push([num])
-        // Continue consecutive run
-        else if (num === versesNumbers[i - 1]! + 1) {
-            const last = acc.at(-1)
-            if (last) last[1] = num
-        }
-        // Start new run
-        else acc.push([num])
-        return acc
-    }, [])
+    const result = versesNumbers.reduce<Array<[number, number?]>>(
+        (acc, num, i) => {
+            // Start of a new range
+            if (i === 0) acc.push([num])
+            // Continue consecutive run
+            else if (num === versesNumbers[i - 1]! + 1) {
+                const last = acc.at(-1)
+                if (last) last[1] = num
+            }
+            // Start new run
+            else acc.push([num])
+            return acc
+        },
+        [],
+    )
 
     return result.map(([start, end]) => ({
         start,
@@ -41,11 +40,19 @@ function summarizeSequence(versesNumbers: number[]) {
     }))
 }
 
+interface TextSelectionDialogProps {
+    open: boolean
+    selectedVerses: { [key: string]: VerseData }
+    onClear: () => void
+}
+
 export default function TextSelectionDialog({
     open,
     selectedVerses,
+    onClear,
 }: TextSelectionDialogProps) {
-    const [copyButtonText, setCopyButtonText] = useState('Copy')
+    const { t } = useTranslation()
+    const [copyButtonText, setCopyButtonText] = useState(t('Copy'))
 
     const groupedByBook = groupBy(
         selectedVerses,
@@ -88,7 +95,7 @@ export default function TextSelectionDialog({
     )
 
     useEffect(() => {
-        setCopyButtonText('Copy')
+        setCopyButtonText(t('Copy'))
     }, [selectedVerses])
 
     return (
@@ -104,10 +111,7 @@ export default function TextSelectionDialog({
                 >
                     <Command className='p-3 bg-stone-600 text-white shadow-lg pt-2 pb-2 pl-2 pr-1'>
                         <div className=''>
-                            <div className='flex justify-between mb-1'>
-                                <div className='text-lg font-bold flex items-center'>
-                                    Selected text
-                                </div>
+                            <div className='flex justify-between mb-3'>
                                 <Button
                                     className='cursor-pointer'
                                     variant='secondary'
@@ -115,11 +119,21 @@ export default function TextSelectionDialog({
                                         navigator.clipboard.writeText(
                                             textToCopy,
                                         )
-                                        setCopyButtonText('Copied')
+                                        setCopyButtonText(t('Copied'))
                                     }}
                                 >
                                     <CopySimpleIcon size={24} />
                                     {copyButtonText}
+                                </Button>
+                                <Button
+                                    className='cursor-pointer'
+                                    variant='secondary'
+                                    onClick={() => {
+                                        onClear()
+                                    }}
+                                >
+                                    <TrashIcon size={24} />
+                                    {t('Clear')}
                                 </Button>
                             </div>
 

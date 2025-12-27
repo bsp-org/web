@@ -109,6 +109,9 @@ export default function Search() {
             <TextSelectionDialog
                 open={!isEmpty(selectedVerses)}
                 selectedVerses={selectedVerses}
+                onClear={() => {
+                    setSelectedVerses({})
+                }}
             />
             <div className='flex w-full justify-center'>
                 <div className='flex flex-col w-full max-w-4xl justify-center items-center'>
