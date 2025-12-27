@@ -39,6 +39,8 @@ export default function Search() {
         [key: string]: VerseData
     }>({})
 
+    const [pageSize, setPageSize] = useState(50)
+
     const searchQuery = useQuery({
         ...getVersesApiVersesGetOptions({
             query: {
@@ -48,14 +50,22 @@ export default function Search() {
                 chapter: chapter ? chapter : null,
                 exact: exactMatch,
                 page: currentPage,
+                page_size: pageSize,
             },
         }),
         enabled: !!translationId && (!!searchText || !!bookID),
     })
 
+    const isReadingMode = !!bookID && !!chapter && !searchText
+
     useEffect(() => {
         setCurrentPage(1)
-    }, [searchText, translationId, exactMatch])
+        if (isReadingMode) {
+            setPageSize(200)
+        } else {
+            setPageSize(50)
+        }
+    }, [searchText, translationId, exactMatch, bookID, chapter])
 
     useEffect(() => {
         setChapter(null)
@@ -216,7 +226,7 @@ export default function Search() {
                         {t('Verses')}
                     </div>
                     <div className='flex justify-center'>
-                        {!searchQuery.data?.verses && (
+                        {isEmpty(searchQuery.data?.verses) && (
                             <div className='flex justify-center text-gray-500'>
                                 {t('No data')}
                             </div>
@@ -302,6 +312,37 @@ export default function Search() {
                                         }}
                                     >
                                         {t('Next')}
+                                    </Button>
+                                </div>
+                            </div>
+                        )}
+                        {searchQuery.data && isReadingMode && (
+                            <div className='flex justify-between mt-10 mb-10'>
+                                <div className='justify-start'>
+                                </div>
+                                <div className='justify-end gap-4 '>
+                                    <Button
+                                        className='cursor-pointer'
+                                        disabled={
+                                            chapter === 1
+                                        }
+                                        onClick={() => {
+                                            setChapter(chapter - 1)
+                                        }}
+                                    >
+                                        {t('Previous chapter')}
+                                    </Button>
+                                    <span className='text-gray-500 content-center mr-2 ml-2'>
+                                        {chapter}
+                                    </span>
+                                    <Button
+                                        className='cursor-pointer'
+                                        disabled={currentBook?.chapters.length === chapter}
+                                        onClick={() => {
+                                            setChapter(chapter + 1)
+                                        }}
+                                    >
+                                        {t('Next chapter')}
                                     </Button>
                                 </div>
                             </div>
