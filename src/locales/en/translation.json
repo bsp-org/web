@@ -15,7 +15,10 @@
     "Search...": "Search...",
     "Select book": "Select book",
     "Select chapter": "Select chapter",
+    "Select search type": "Select search type",
     "Select translation": "Select translation",
+    "Semantic": "Semantic",
+    "Fuzzy": "Inexact",
     "Type something": "Type something",
     "Verses": "Verses"
 }
