@@ -1,6 +1,6 @@
-import type { CheckedState } from '@radix-ui/react-checkbox'
 import { useQuery } from '@tanstack/react-query'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { find, has, isEmpty, omit } from 'lodash'
 import {
     getTranslationMetadataApiTranslationsTranslationIdMetadataGetOptions,
@@ -9,23 +9,24 @@ import {
 } from 'src/client/@tanstack/react-query.gen'
 import Verse from 'src/components/local/Verse'
 import { Button } from 'src/components/ui/button'
-import { Checkbox } from 'src/components/ui/checkbox'
 import Combobox from 'src/components/ui/combobox'
 import { Input } from 'src/components/ui/input'
-import { Label } from 'src/components/ui/label'
-import { parseAsBoolean, useQueryState, parseAsInteger } from 'nuqs'
+import { useQueryState, parseAsInteger, parseAsStringEnum } from 'nuqs'
 import Spinner from 'src/components/local/Spinner'
 import { MagnifyingGlassIcon, TrashIcon } from '@phosphor-icons/react'
 import type { VerseData } from 'src/client/types.gen'
 import TextSelectionDialog from 'src/components/local/TextSelectionDialog'
-import { useTranslation } from 'react-i18next'
+import { SearchType } from 'src/utils'
 
 export default function Search() {
     const { t } = useTranslation()
+
     const [searchText, setSearchText] = useQueryState('search')
-    const [exactMatch, setExactMatch] = useQueryState(
-        'exact',
-        parseAsBoolean.withDefault(true),
+    const [searchType, setSearchType] = useQueryState(
+        'searchType',
+        parseAsStringEnum<SearchType>(Object.values(SearchType)).withDefault(
+            SearchType.FUZZY,
+        ),
     )
     const [translationId, setTranslationId] = useQueryState('translation')
     const [searchInputValue, setSearchInputValue] = useState(searchText || '')
@@ -35,10 +36,10 @@ export default function Search() {
     )
     const [bookID, setBookID] = useQueryState('book', parseAsInteger)
     const [chapter, setChapter] = useQueryState('chapter', parseAsInteger)
+
     const [selectedVerses, setSelectedVerses] = useState<{
         [key: string]: VerseData
     }>({})
-
     const [pageSize, setPageSize] = useState(50)
 
     const searchQuery = useQuery({
@@ -48,7 +49,7 @@ export default function Search() {
                 translation_id: translationId || '',
                 book: bookID ? bookID.toString() : null,
                 chapter: chapter ? chapter : null,
-                exact: exactMatch,
+                exact: searchType === SearchType.EXACT ? true : false,
                 page: currentPage,
                 page_size: pageSize,
             },
@@ -65,7 +66,7 @@ export default function Search() {
         } else {
             setPageSize(50)
         }
-    }, [searchText, translationId, exactMatch, bookID, chapter])
+    }, [searchText, translationId, searchType, bookID, chapter])
 
     useEffect(() => {
         setChapter(null)
@@ -107,6 +108,19 @@ export default function Search() {
             label: chapter.chapter.toString(),
         })) || []
 
+    const searchTypeOptions = useMemo(() => {
+        const searchTypeLabels: Record<SearchType, string> = {
+            [SearchType.EXACT]: t('Exact'),
+            [SearchType.FUZZY]: t('Fuzzy'),
+            [SearchType.SEMANTIC]: t('Semantic'),
+        }
+
+        return Object.values(SearchType).map((type) => ({
+            value: type,
+            label: searchTypeLabels[type],
+        }))
+    }, [t])
+
     if (
         translationOptionsQuery.isLoading ||
         translationMetadataQuery.isLoading
@@ -127,23 +141,18 @@ export default function Search() {
                 <div className='flex flex-col w-full max-w-4xl justify-center items-center'>
                     <div className='flex mb-3'>
                         <div className='flex items-center mr-3'>
-                            <Checkbox
-                                id='exact-match-checkbox'
-                                checked={exactMatch}
-                                onCheckedChange={(checked: CheckedState) => {
-                                    setExactMatch(
-                                        checked === 'indeterminate'
-                                            ? false
-                                            : checked,
-                                    )
+                            <Combobox
+                                searchEnabled={false}
+                                clearable={false}
+                                value={searchType || ''}
+                                onChange={(value) => {
+                                    if (value) {
+                                        setSearchType(value as SearchType)
+                                    }
                                 }}
+                                placeholder={t('Select search type')}
+                                options={searchTypeOptions}
                             />
-                            <Label
-                                className='ml-1'
-                                htmlFor='exact-match-checkbox'
-                            >
-                                {t('Exact')}
-                            </Label>
                         </div>
                         <div className='flex relative'>
                             <Input
