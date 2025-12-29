@@ -42,10 +42,7 @@ export default function Search() {
         'page',
         parseAsInteger.withDefault(1),
     )
-    const [bookID, setBookID] = useQueryState(
-        'book',
-        parseAsInteger.withDefault(1),
-    )
+    const [bookID, setBookID] = useQueryState('book')
     const [chapter, setChapter] = useQueryState('chapter', parseAsInteger)
 
     const [selectedVerses, setSelectedVerses] = useState<{
