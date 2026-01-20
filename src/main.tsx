@@ -22,6 +22,7 @@ import reportWebVitals from './reportWebVitals.ts'
 
 import Search from './pages/Search.tsx'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
+import Login from './pages/Login.tsx'
 
 const rootRoute = createRootRoute({
     component: () => (
@@ -47,6 +48,11 @@ const routeTree = rootRoute.addChildren([
     createRoute({
         path: '/search',
         component: Search,
+        getParentRoute: () => rootRoute,
+    }),
+    createRoute({
+        path: '/login',
+        component: Login,
         getParentRoute: () => rootRoute,
     }),
 ])
